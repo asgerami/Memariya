@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Container, Typography, TextField, Button, Box } from "@mui/material";
 import axios from "axios";
+import StudentForm from "./StudentForm";
+import SignUp from "./SignUp";
+import SignIn from "./SignIn";
 
 function App() {
   const [studentId, setStudentId] = useState("");
@@ -9,6 +12,9 @@ function App() {
   const [explanation, setExplanation] = useState("");
 
   const [createdStudent, setCreatedStudent] = useState(null);
+  const [token, setToken] = useState(null);
+  const [showSignUp, setShowSignUp] = useState(false);
+  const [showSignIn, setShowSignIn] = useState(false);
 
   useEffect(() => {
     const fetchStudent = async () => {
@@ -25,7 +31,7 @@ function App() {
       }
     };
     fetchStudent();
-  }, [studentId]);
+  }, [studentId, createdStudent]);
 
   const handleGenerateExplanation = async () => {
     try {
@@ -44,52 +50,69 @@ function App() {
     setStudentId(newStudent.student_id);
   };
 
+  const handleSignInSuccess = (token) => {
+    setToken(token);
+    setShowSignIn(false);
+  };
+  
   return (
     <Container maxWidth="md">
-      <Typography variant="h4" align="center" gutterBottom>
-        Personalized Learning Assistant
-      </Typography>
+        <Typography variant="h4" align="center" gutterBottom>Personalized Learning Assistant</Typography>
 
-      <TextField
-        label="Student ID"
-        value={studentId}
-        onChange={(e) => setStudentId(e.target.value)}
-        fullWidth
-        margin="normal"
-      />
+        {token ? (
+            // App content when user is logged in
+            <>
+                <StudentForm onCreate={handleStudentCreated} />
+                <TextField
+                    label="Student ID"
+                    value={studentId}
+                    onChange={(e) => setStudentId(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                />
 
-      {student && (
-        <Box mt={2}>
-          <Typography variant="h6">Student Profile</Typography>
-          <Typography>Learning Style: {student.learning_style}</Typography>
-          {/* Display other student profile details */}
-        </Box>
-      )}
+                {student && (
+                    <Box mt={2}>
+                        <Typography variant="h6">Student Profile</Typography>
+                        <Typography>Learning Style: {student.learning_style}</Typography>
+                    </Box>
+                )}
 
-      <TextField
-        label="Concept to Explain"
-        value={concept}
-        onChange={(e) => setConcept(e.target.value)}
-        fullWidth
-        margin="normal"
-      />
+                <TextField
+                    label="Concept to Explain"
+                    value={concept}
+                    onChange={(e) => setConcept(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                />
 
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleGenerateExplanation}
-      >
-        Generate Explanation
-      </Button>
+                <Button variant="contained" color="primary" onClick={handleGenerateExplanation}>
+                    Generate Explanation
+                </Button>
 
-      {explanation && (
-        <Box mt={2}>
-          <Typography variant="h6">Explanation</Typography>
-          <Typography>{explanation}</Typography>
-        </Box>
-      )}
+                {explanation && (
+                    <Box mt={2}>
+                        <Typography variant="h6">Explanation</Typography>
+                        <Typography>{explanation}</Typography>
+                    </Box>
+                )}
+            </>
+        ) : (
+            // Sign-up / Sign-in options if not logged in
+            <Box textAlign="center">
+                <Button variant="contained" color="primary" onClick={() => setShowSignUp(true)} sx={{ margin: 1 }}>
+                    Sign Up
+                </Button>
+                <Button variant="outlined" color="primary" onClick={() => setShowSignIn(true)} sx={{ margin: 1 }}>
+                    Sign In
+                </Button>
+
+                {showSignUp && <SignUp />}
+                {showSignIn && <SignIn onSignIn={handleSignInSuccess} />}
+            </Box>
+        )}
     </Container>
-  );
+);
 }
 
 export default App;
