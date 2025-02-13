@@ -1,9 +1,8 @@
-// frontend/src/StudentForm.js
 import React, { useState } from 'react';
 import { TextField, Button, Container, Box } from '@mui/material';
 import axios from 'axios';
 
-function StudentForm({ onCreate }) {  // Add onCreate prop
+function StudentForm({ onCreate }) { 
     const [learningStyle, setLearningStyle] = useState('');
     const [preferredSubjects, setPreferredSubjects] = useState('');
     const [interests, setInterests] = useState('');
@@ -30,7 +29,7 @@ function StudentForm({ onCreate }) {  // Add onCreate prop
                 setAcademicLevel('');
 
                 if (onCreate) {
-                    onCreate(response.data);  // Call the onCreate function
+                    onCreate(response.data); 
                 }
 
                 alert("Student created successfully!")
