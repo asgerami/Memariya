@@ -1,13 +1,14 @@
+# backend/main.py
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from . import models, schemas
 from .database import SessionLocal, engine
-import google.generativeai as genai  # Import Gemini library
+import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")  # Load Gemini API key
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -20,6 +21,10 @@ def get_db():
         yield db
     finally:
         db.close()
+
+@app.get("/")
+async def read_root():
+    return {"message": "Hello, world!"}  # Return a simple response
 
 @app.post("/students/", response_model=schemas.Student)
 def create_student(student: schemas.StudentCreate, db: Session = Depends(get_db)):
@@ -49,7 +54,7 @@ def generate_content(concept: str, student_id: int, db: Session = Depends(get_db
     genai.configure(api_key=GOOGLE_API_KEY)
 
     try:
-        model = genai.GenerativeModel('gemini-pro')  # Specify the Gemini model
+        model = genai.GenerativeModel('gemini-pro')
         response = model.generate_content(prompt)
         explanation = response.text
 
