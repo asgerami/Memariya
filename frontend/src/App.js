@@ -8,6 +8,8 @@ function App() {
   const [concept, setConcept] = useState("");
   const [explanation, setExplanation] = useState("");
 
+  const [createdStudent, setCreatedStudent] = useState(null);
+
   useEffect(() => {
     const fetchStudent = async () => {
       if (studentId) {
@@ -35,6 +37,11 @@ function App() {
       console.error("Error generating explanation:", error);
       setExplanation("Error generating explanation.");
     }
+  };
+
+  const handleStudentCreated = (newStudent) => {
+    setCreatedStudent(newStudent);
+    setStudentId(newStudent.student_id);
   };
 
   return (
